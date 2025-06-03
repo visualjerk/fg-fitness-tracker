@@ -1,103 +1,175 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import {
+  SPORTS,
+  getPointsForTrackedSport,
+  getSportById,
+  trackedSportsToGoogleSheetComment,
+  type SportId,
+  type TrackedSport,
+  type TrackedSportWithId,
+} from "./sports";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [trackedSports, setTrackedSports] = useState<TrackedSportWithId[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const handleAddTrackedSport = (trackedSport: TrackedSport) => {
+    setTrackedSports((prev) => [
+      ...prev,
+      { ...trackedSport, id: crypto.randomUUID() },
+    ]);
+  };
+
+  const handleDeleteTrackedSport = (trackedSport: TrackedSportWithId) => {
+    setTrackedSports((prev) => prev.filter((t) => t.id !== trackedSport.id));
+  };
+
+  const handleReset = () => {
+    setTrackedSports([]);
+  };
+
+  const handleCopyToGoogleSheet = () => {
+    const comment = trackedSportsToGoogleSheetComment(trackedSports);
+    navigator.clipboard.writeText(comment);
+  };
+
+  return (
+    <div className="grid justify-items-center font-[family-name:var(--font-geist-sans)]">
+      <main className="max-w-screen-lg w-full grid gap-10 p-20">
+        <div className="flex items-center gap-2 justify-between">
+          <h1 className="text-4xl font-bold">🏃‍♀️ FG Fitness Tracker</h1>
+        </div>
+        <div className="grid gap-2 w-full">
+          <div className="grid grid-cols-12 gap-4 font-bold">
+            <div className="col-span-4">Sportart</div>
+            <div className="col-span-4">Anzahl</div>
+            <div className="col-span-3">Punkte</div>
+            <div className="col-span-1"></div>
+          </div>
+          {trackedSports.map((trackedSport, index) => (
+            <TrackedSport
+              key={index}
+              trackedSport={trackedSport}
+              onDelete={() => handleDeleteTrackedSport(trackedSport)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          ))}
+          <TrackedSportForm onSave={handleAddTrackedSport} />
+        </div>
+        <div className="grid gap-2 w-full border-t border-gray-300 pt-4">
+          <div className="grid grid-cols-12 gap-4 font-bold">
+            <div className="col-span-4">Summe</div>
+            <div className="col-span-4"></div>
+            <div className="col-span-3">
+              {trackedSports.reduce(
+                (acc, trackedSport) =>
+                  acc + getPointsForTrackedSport(trackedSport),
+                0
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 justify-between">
+          <button
+            className="border border-gray-300 rounded-md p-2 px-4 hover:bg-gray-100 cursor-pointer"
+            onClick={handleReset}
           >
-            Read our docs
-          </a>
+            Zurücksetzen
+          </button>
+          <button
+            className="bg-teal-500 text-white p-2 px-4 rounded-md font-bold hover:bg-teal-600 cursor-pointer"
+            onClick={handleCopyToGoogleSheet}
+          >
+            Google Sheet Kommentar kopieren
+          </button>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    </div>
+  );
+}
+
+function TrackedSportForm({
+  onSave,
+}: {
+  onSave: (trackedSport: TrackedSport) => void;
+}) {
+  const [sportId, setSportId] = useState<SportId | "">("");
+  const [units, setUnits] = useState<number>(0);
+
+  const sport = sportId !== "" ? getSportById(sportId) : null;
+
+  function handleSave() {
+    if (sportId === "" || units < 1) {
+      return;
+    }
+
+    onSave({ sportId, units });
+    setSportId("");
+    setUnits(0);
+  }
+
+  return (
+    <div className="grid grid-cols-24 gap-4 items-center">
+      <select
+        value={sportId}
+        onChange={(e) => setSportId(e.target.value as SportId | "")}
+        className="border border-gray-300 rounded-md p-2 col-span-8"
+      >
+        <option value="">Sport auswählen</option>
+        {SPORTS.map((sport) => (
+          <option key={sport.id} value={sport.id}>
+            {sport.name}
+          </option>
+        ))}
+      </select>
+      <input
+        type="number"
+        placeholder="Anzahl"
+        value={units}
+        onChange={(e) => setUnits(Number(e.target.value))}
+        className="border border-gray-300 rounded-md p-2 col-span-3"
+      />
+      <div className="col-span-5">{sport && sport.unit}</div>
+      <div className="col-span-4">
+        {sportId !== "" ? getPointsForTrackedSport({ sportId, units }) : 0}
+      </div>
+      <button
+        className="col-span-4 bg-teal-500 text-white p-2 rounded-md font-bold hover:bg-teal-600 cursor-pointer"
+        onClick={handleSave}
+      >
+        Speichern
+      </button>
+    </div>
+  );
+}
+
+function TrackedSport({
+  trackedSport,
+  onDelete,
+}: {
+  trackedSport: TrackedSport;
+  onDelete: () => void;
+}) {
+  const sport = getSportById(trackedSport.sportId);
+
+  if (!sport) {
+    return null;
+  }
+
+  const points = getPointsForTrackedSport(trackedSport);
+  return (
+    <div className="grid grid-cols-12 gap-4 w-full items-center">
+      <div className="col-span-4">{sport?.name}</div>
+      <div className="col-span-4">
+        {trackedSport.units} {sport.unit}
+      </div>
+      <div className="col-span-2">{points}</div>
+      <button
+        className="col-span-2 border border-gray-300 rounded-md p-1 hover:bg-gray-100 cursor-pointer"
+        onClick={onDelete}
+      >
+        Löschen
+      </button>
     </div>
   );
 }
