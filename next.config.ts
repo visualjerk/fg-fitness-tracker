@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
    *
    * @see https://nextjs.org/docs/app/api-reference/next-config-js/basePath
    */
-  basePath: "/visualjerk/fg-fitness-tracker",
+  basePath: "/fg-fitness-tracker",
 
   /**
    * Disable server-based image optimization. Next.js does not support
