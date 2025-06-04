@@ -100,12 +100,12 @@ function TrackedSportForm({
   onSave: (trackedSport: TrackedSport) => void;
 }) {
   const [sportId, setSportId] = useState<SportId | "">("");
-  const [units, setUnits] = useState<number>(0);
+  const [units, setUnits] = useState<number | "">("");
 
   const sport = sportId !== "" ? getSportById(sportId) : null;
 
   function handleSave() {
-    if (sportId === "" || units < 1) {
+    if (sportId === "" || units === "" || units < 1) {
       return;
     }
 
@@ -119,7 +119,7 @@ function TrackedSportForm({
       <select
         value={sportId}
         onChange={(e) => setSportId(e.target.value as SportId | "")}
-        className="border border-gray-300 rounded-md p-2 col-span-8"
+        className="border-b border-gray-300 p-1 py-2 col-span-8"
       >
         <option value="">Sport auswählen</option>
         {SPORTS.map((sport) => (
@@ -129,11 +129,17 @@ function TrackedSportForm({
         ))}
       </select>
       <input
-        type="number"
         placeholder="Anzahl"
         value={units}
-        onChange={(e) => setUnits(Number(e.target.value))}
-        className="border border-gray-300 rounded-md p-2 col-span-3"
+        onChange={(e) =>
+          setUnits(e.target.value === "" ? "" : Number(e.target.value))
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSave();
+          }
+        }}
+        className="border-b border-gray-300 p-1 py-2 col-span-3"
       />
       <div className="col-span-5">{sport && sport.unit}</div>
       <div className="col-span-4">
