@@ -10,6 +10,7 @@ import {
   type TrackedSport,
   type TrackedSportWithId,
 } from "./sports";
+import { showNotification } from "./notifications/notifications";
 
 export default function Home() {
   const [trackedSports, setTrackedSports] = useState<TrackedSportWithId[]>([]);
@@ -32,6 +33,10 @@ export default function Home() {
   const handleCopyToGoogleSheet = () => {
     const comment = trackedSportsToGoogleSheetComment(trackedSports);
     navigator.clipboard.writeText(comment);
+    showNotification({
+      title: "Starke Leistung 🙌",
+      message: "Der Kommentar wurde in die Zwischenablage kopiert",
+    });
   };
 
   return (
@@ -77,8 +82,9 @@ export default function Home() {
             Zurücksetzen
           </button>
           <button
-            className="bg-teal-500 text-white p-2 px-4 rounded-md font-bold hover:bg-teal-600 cursor-pointer"
+            className="bg-teal-500 text-white p-2 px-4 rounded-md font-bold hover:bg-teal-600 cursor-pointer disabled:opacity-50 disabled:bg-teal-500 disabled:cursor-default"
             onClick={handleCopyToGoogleSheet}
+            disabled={trackedSports.length === 0}
           >
             Google Sheet Kommentar kopieren
           </button>
