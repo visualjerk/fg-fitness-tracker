@@ -129,6 +129,7 @@ function TrackedSportForm({
         ))}
       </select>
       <input
+        type="number"
         placeholder="Anzahl"
         value={units}
         onChange={(e) =>
