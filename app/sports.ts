@@ -3,6 +3,7 @@ type Sport = {
   name: string;
   unit: string;
   unitsPerPoint: number;
+  hideUnitInComment?: boolean;
 };
 
 export const SPORTS = [
@@ -11,6 +12,7 @@ export const SPORTS = [
     name: "Schritte (Gehen)",
     unit: "Schritte",
     unitsPerPoint: 1000,
+    hideUnitInComment: true,
   },
   {
     id: "jogging",
@@ -35,12 +37,14 @@ export const SPORTS = [
     name: "Push Ups",
     unit: "Wiederholungen",
     unitsPerPoint: 40,
+    hideUnitInComment: true,
   },
   {
     id: "rope-jumping",
     name: "Seilspringen",
     unit: "Wiederholungen",
     unitsPerPoint: 400,
+    hideUnitInComment: true,
   },
   {
     id: "meditation",
@@ -65,12 +69,14 @@ export const SPORTS = [
     name: "Sit Ups",
     unit: "Wiederholungen",
     unitsPerPoint: 100,
+    hideUnitInComment: true,
   },
   {
     id: "pullups",
     name: "Klimmzüge (komplett)",
     unit: "Wiederholungen",
     unitsPerPoint: 15,
+    hideUnitInComment: true,
   },
   {
     id: "stretching",
@@ -88,7 +94,7 @@ export const SPORTS = [
 
 export type SportId = (typeof SPORTS)[number]["id"];
 
-export const getSportById = (sportId: SportId) => {
+export const getSportById = (sportId: SportId): Sport | undefined => {
   return SPORTS.find((sport) => sport.id === sportId);
 };
 
@@ -116,7 +122,7 @@ export function trackedSportsToGoogleSheetComment(
       if (!sport) return "";
       return `${getPointsForTrackedSport(trackedSport)} P.: ${
         trackedSport.units
-      } ${sport.unit} ${sport.name}`;
+      }${sport.hideUnitInComment ? "" : ` ${sport.unit}`} ${sport.name}`;
     })
     .join("\n");
 
