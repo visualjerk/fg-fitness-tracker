@@ -57,7 +57,7 @@ function useNotifications() {
 }
 
 function getServerSnapshot() {
-  return [];
+  return null;
 }
 
 function emitChange() {

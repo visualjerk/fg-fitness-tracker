@@ -78,7 +78,7 @@ function NotificationsSnackbar() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 grid justify-center p-4 gap-2">
-      {notifications.map((notification) => (
+      {notifications?.map((notification) => (
         <NotificationAlert key={notification.id} {...notification} />
       ))}
     </div>
