@@ -143,7 +143,9 @@ function TrackedSportForm({
       />
       <div className="col-span-5">{sport && sport.unit}</div>
       <div className="col-span-4">
-        {sportId !== "" ? getPointsForTrackedSport({ sportId, units }) : 0}
+        {sportId !== "" && units !== ""
+          ? getPointsForTrackedSport({ sportId, units })
+          : 0}
       </div>
       <button
         className="col-span-4 bg-teal-500 text-white p-2 rounded-md font-bold hover:bg-teal-600 cursor-pointer"
