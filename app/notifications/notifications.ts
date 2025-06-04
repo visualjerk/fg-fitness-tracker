@@ -53,7 +53,11 @@ function getSnapshot() {
 }
 
 function useNotifications() {
-  return useSyncExternalStore(subscribe, getSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
+function getServerSnapshot() {
+  return [];
 }
 
 function emitChange() {
